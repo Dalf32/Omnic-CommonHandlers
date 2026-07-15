@@ -19,3 +19,10 @@ config.handlers.starboard do |starboard|
   starboard.image_extensions = %w[jpg jpeg gif bmp png]
 end
 ```
+
+### Moderation
+Moderation tools for larger servers, including setting a honeypot channel.
+
+Handler: `handlers/moderation_handler.rb`
+
+Config: none
