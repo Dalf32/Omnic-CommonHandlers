@@ -45,6 +45,7 @@ class ModerationHandler < CommandHandler
     event.message.delete
     victim.ban(reason: 'Honeypot')
   rescue Discordrb::Errors::NoPermission
+    audit_warning('Honeypot', "Bot lacks the permissions necessary to ban #{victim.mention}")
     log.warn("Bot lacks the permissions necessary to ban user: #{format_obj(victim)} in server: #{format_obj(server)}")
   end
 
