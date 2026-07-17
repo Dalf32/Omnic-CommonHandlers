@@ -6,12 +6,15 @@ Simple anonymous polling of users.
 
 Handler: `handlers/poll_handler.rb`
 
-Config: none
-
 ### Starboard
 Allows setting a channel where messages that receive a certain number of reactions will be reposted.
 
 Handler: `handlers/starboard_handler.rb`
+
+Dependencies:
+
+- redis-objects
+- unicode-emoji
 
 Config:
 ```ruby
@@ -24,5 +27,3 @@ end
 Moderation tools for larger servers, including setting a honeypot channel.
 
 Handler: `handlers/moderation_handler.rb`
-
-Config: none
