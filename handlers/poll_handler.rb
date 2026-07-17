@@ -6,7 +6,7 @@ class PollHandler < CommandHandler
 
   command(:poll, :create_poll)
     .feature(:polling).max_args(1).pm_enabled(false)
-    .permissions(:manage_channels).usage('poll [channel]')
+    .permissions(:manage_messages).usage('poll [channel]')
     .description('Creates a new poll and posts it to either the current or provided channel.')
 
   command(:pollresults, :check_results)
