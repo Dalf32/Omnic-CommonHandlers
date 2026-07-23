@@ -79,7 +79,14 @@ class PollHandler < CommandHandler
     return 'No active poll.' unless poll_active?
 
     server_redis.rename(ACTIVE_POLL_KEY, LAST_POLL_KEY)
-    server_redis.rename(ACTIVE_VOTES_KEY, LAST_VOTES_KEY)
+
+    # Rename errors if key does not exist, which happens if no votes were entered
+    if server_redis.exists?(ACTIVE_VOTES_KEY)
+      server_redis.rename(ACTIVE_VOTES_KEY, LAST_VOTES_KEY)
+    else
+      server_redis.del(LAST_VOTES_KEY)
+    end
+
     "Poll closed!"
   end
 
