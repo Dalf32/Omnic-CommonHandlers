@@ -41,6 +41,9 @@ class PollHandler < CommandHandler
     options = []
     opt_letter = 'A'
 
+    header = prompt(event.message, 'Enter poll header/prompt or [S]KIP:')
+    header = nil if header.nil? || header == 'SKIP' || header.casecmp?('s')
+
     loop do
       opt = prompt(event.message, "Enter option ##{options.count + 1} (#{opt_letter}) or [E]ND:")
       break if opt.nil? || opt == 'END' || opt.casecmp?('e')
@@ -52,7 +55,7 @@ class PollHandler < CommandHandler
     return 'No options provided.' if options.empty?
 
     server_redis.set(ACTIVE_POLL_KEY, JSON.generate(options))
-    channel.send_message(format_poll(options))
+    channel.send_message(format_poll(header, options))
   end
 
   def check_results(event, *channel_name)
@@ -139,10 +142,15 @@ class PollHandler < CommandHandler
     [poll_options(poll_key), poll_votes(votes_key)]
   end
 
-  def format_poll(opts)
+  def format_poll(header, opts)
     formatted_opts = opts.map { |letter, option| "**#{letter}** - #{option}" }.join("\n")
 
-    "New poll!\n#{formatted_opts}\n\n`!vote <option_letter(s)>` *to vote (e.g. !vote A C)*"
+    <<~POLL
+      ## #{header || 'New poll!'}
+      #{formatted_opts}
+      
+      -# `!vote <option_letter(s)>` to vote (e.g. !vote A C)
+    POLL
   end
 
   def format_poll_results(opts, votes)
