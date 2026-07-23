@@ -19,7 +19,7 @@ class PollHandler < CommandHandler
     .description('Closes the running poll and saves the results.')
 
   command(:vote, :vote_in_poll)
-    .feature(:polling).min_args(1).pm_enabled(false).usage('vote [option]...')
+    .feature(:polling).min_args(1).pm_enabled(false).usage('vote <option_letter(s)...>')
     .description("Enters the user's vote into the currently-running poll and deletes their message.")
 
   def redis_name
@@ -52,9 +52,7 @@ class PollHandler < CommandHandler
     return 'No options provided.' if options.empty?
 
     server_redis.set(ACTIVE_POLL_KEY, JSON.generate(options))
-
-    formatted_options = options.map { |letter, option| "**#{letter}** - #{option}" }
-    channel.send_message(formatted_options.join("\n"))
+    channel.send_message(format_poll(options))
   end
 
   def check_results(event, *channel_name)
@@ -138,6 +136,12 @@ class PollHandler < CommandHandler
     end
 
     [poll_options(poll_key), poll_votes(votes_key)]
+  end
+
+  def format_poll(opts)
+    formatted_opts = opts.map { |letter, option| "**#{letter}** - #{option}" }.join("\n")
+
+    "New poll!\n#{formatted_opts}\n\n`!vote <option_letter(s)>` *to vote (e.g. !vote A C)*"
   end
 
   def format_poll_results(opts, votes)
