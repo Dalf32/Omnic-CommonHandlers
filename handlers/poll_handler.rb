@@ -42,8 +42,8 @@ class PollHandler < CommandHandler
     opt_letter = 'A'
 
     loop do
-      opt = prompt(event.message, "Enter option ##{options.count + 1} (#{opt_letter}) or END:")
-      break if opt.nil? || opt == 'END'
+      opt = prompt(event.message, "Enter option ##{options.count + 1} (#{opt_letter}) or [E]ND:")
+      break if opt.nil? || opt == 'END' || opt.casecmp?('e')
 
       options << [opt_letter, opt]
       opt_letter = opt_letter.succ
@@ -85,6 +85,7 @@ class PollHandler < CommandHandler
 
     opts = poll_options(ACTIVE_POLL_KEY)
     option_letters = opts.map(&:first)
+    votes = votes.join(',').split(',').reject(&:empty?) # Handle commas
 
     # check if user has votes left, etc.
     return "One or more votes were invalid." if votes.any? { |vote| !option_letters.include?(vote.upcase) }
